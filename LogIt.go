@@ -28,7 +28,6 @@ func init() {
 	lg := syslog{} // pre instantiation
 	lg.Filepath = fmt.Sprintf("%s%s.log", "logs/", time.Now().Format("2006_01_02"))
 	lg.loadCategories() // loads all categories
-	Syslog = &lg        // exported variable receives the instance
 	var e error
 	if !lg.checkPath() {
 		e = lg.createDir()
@@ -37,6 +36,7 @@ func init() {
 		lg.file, _ = os.OpenFile(lg.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 1444)
 		lg.log = log.New(lg.file, "", log.Ldate|log.Ltime)
 	}
+	Syslog = &lg // exported variable receives the instance
 }
 
 // getLogDate method - returns a string with the log format date
@@ -87,8 +87,6 @@ func (this *syslog) AppendCategories(newCategories map[string][]string) {
 
 // WriteLog method - writes the message to the log file
 func (this *syslog) WriteLog(category string, msg string, trace string) {
-	//err := this.startLog()
-	//if err == nil {
 	val, res := this.categories[category]
 	if !res {
 		fmt.Printf("%s %s The category %s does not exists on %s\n",
@@ -99,7 +97,6 @@ func (this *syslog) WriteLog(category string, msg string, trace string) {
 		this.log.Printf("%s %s on %s", val[0], msg, trace)
 	}
 	defer this.file.Close()
-	//}
 }
 
 // GetTraceMsg method - get the full error stack trace
