@@ -13,33 +13,33 @@ import (
 
 // init function - data and process initialization
 func init() {
-	Syslog.Filepath = "log/"
+	Log.Filepath = "log/"
 }
 
 // Test function TestGetLogDate to evaluate getLogDate
 func TestGetLogDate(t *testing.T) {
-	logDate := Syslog.getLogDate()
+	logDate := Log.getLogDate()
 	currDate := time.Now().Format("2006/01/02 15:04:05")
 	if logDate != currDate {
 		t.Errorf("Expected return from getLogDate to be the current date %s, but got %s ",
 			time.Now().Format("2006/01/02 15:04:05"), // get the current date
-			Syslog.getLogDate())                      // get the method date
+			Log.getLogDate())                         // get the method date
 	}
 }
 
 // Test function TestCreateDir to evaluate the createDir method
 func TestCreateDir(t *testing.T) {
-	Syslog.createDir() // creates the folder
-	_, e := os.Stat(Syslog.Filepath)
+	Log.createDir() // creates the folder
+	_, e := os.Stat(Log.Filepath)
 	if e != nil { // check for non existent dir
 		t.Errorf("Expected the directory to exists.")
 	}
-	os.Remove(Syslog.Filepath) // remove the dir
+	os.Remove(Log.Filepath) // remove the dir
 }
 
 // Test function TestCheckPath to evaluate the checkPath method
 func TestCheckPath(t *testing.T) {
-	e := Syslog.checkPath()
+	e := Log.checkPath()
 	if e { // check for non existent dir
 		t.Errorf("Expected the directory to not exists.")
 	}
@@ -47,9 +47,9 @@ func TestCheckPath(t *testing.T) {
 
 // Test function TestLoadCategories to evaluate loadCategories method
 func TestLoadCategories(t *testing.T) {
-	Syslog.loadCategories()
-	if Syslog.categories["alert"][0] != "Alert:" {
-		t.Errorf("Expected Syslog.categories[\"alert\"][0] == \"Alert\", but got %s", Syslog.categories["alert"][0])
+	Log.loadCategories()
+	if Log.categories["alert"][0] != "Alert:" {
+		t.Errorf("Expected Log.categories[\"alert\"][0] == \"Alert\", but got %s", Log.categories["alert"][0])
 	}
 }
 
@@ -58,19 +58,19 @@ func TestAppendCategories(t *testing.T) {
 	newCategory := map[string][]string{
 		"checkpoint": {"Checkpoint:", "150.000.000,00"},
 	}
-	Syslog.AppendCategories(newCategory)
-	if Syslog.categories["checkpoint"][0] != "Checkpoint:" {
-		t.Errorf("Expected Checkpoint:, but got %s ", Syslog.categories["checkpoint"][0])
+	Log.AppendCategories(newCategory)
+	if Log.categories["checkpoint"][0] != "Checkpoint:" {
+		t.Errorf("Expected Checkpoint:, but got %s ", Log.categories["checkpoint"][0])
 	}
 }
 
 // Test function TestWriteLog to evaluate WriteLog method
 func TestWriteLog(t *testing.T) {
-	Syslog.Filepath = fmt.Sprintf("%s%s.log", "logs/", time.Now().Format("2006_01_02"))
-	Syslog.WriteLog("debug", "Testing...", Syslog.GetTraceMsg())
+	Log.Filepath = fmt.Sprintf("%s%s.log", "logs/", time.Now().Format("2006_01_02"))
+	Log.WriteLog("debug", "Testing...", Log.GetTraceMsg())
 
 	// open and read the first line of the log file
-	file, _ := os.Open(Syslog.Filepath)
+	file, _ := os.Open(Log.Filepath)
 	fs := bufio.NewScanner(file)
 	fs.Scan()
 	fline := fs.Text()
@@ -81,25 +81,25 @@ func TestWriteLog(t *testing.T) {
 		t.Errorf("Expected to find Debug: in the file")
 	}
 
-	os.Remove(Syslog.Filepath) // remove the file
-	os.Remove("logs/")         // remove the dir
+	os.Remove(Log.Filepath) // remove the file
+	os.Remove("logs/")      // remove the dir
 }
 
 // Test function BenchmarkWriteLog to evaluate the WriteLog method
 func BenchmarkWriteLog(b *testing.B) {
-	Syslog.Filepath = fmt.Sprintf("%s%s.log", "logs/", time.Now().Format("2006_01_02"))
+	Log.Filepath = fmt.Sprintf("%s%s.log", "logs/", time.Now().Format("2006_01_02"))
 	for i := 0; i < b.N; i++ {
-		Syslog.WriteLog("debug", "Testing...", Syslog.GetTraceMsg())
+		Log.WriteLog("debug", "Testing...", Log.GetTraceMsg())
 
 	}
-	os.Remove(Syslog.Filepath) // remove the file
-	os.Remove("logs/")         // remove the dir
+	os.Remove(Log.Filepath) // remove the file
+	os.Remove("logs/")      // remove the dir
 }
 
 // Test function TestGetTraceMsg to evaluate GetTraceMsg method
 func TestGetTraceMsg(t *testing.T) {
 	pattern := fmt.Sprintf(".*PID: %d", os.Getpid())
-	match, _ := regexp.MatchString(pattern, Syslog.GetTraceMsg())
+	match, _ := regexp.MatchString(pattern, Log.GetTraceMsg())
 	if !match {
 		t.Errorf("Expected to match the PID")
 	}

@@ -36,7 +36,7 @@ func init() {
 		lg.file, _ = os.OpenFile(lg.Filepath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 1444)
 		lg.log = log.New(lg.file, "", log.Ldate|log.Ltime)
 	}
-	Syslog = &lg // exported variable receives the instance
+	Log = &lg // exported variable receives the instance
 }
 
 // getLogDate method - returns a string with the log format date
