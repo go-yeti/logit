@@ -20,7 +20,7 @@ type syslog struct {
 }
 
 // to be used as an external pointer to the syslog struct type
-var Syslog *syslog
+var Log *syslog
 
 // init function - initialize values and performs a pre instantiation to make this lib
 // methods work as static methods and avoid external instantiation of the struct
