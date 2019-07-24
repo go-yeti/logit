@@ -2,7 +2,7 @@
 
 A Logger interface that prints to the console and append messages to a log file. 
 
-#### By default files are created in the root folder of your project, within the logs/ folder (the app will attempt to create non existent folders) using the current date of the server as its name and .log extension:
+#### By default files are created in the root folder of your project, within the logs/ folder using the current date of the server as its name and .log extension:
 *logs/2019_06_11.log* 
 
 #### That can be easily changed by:
@@ -21,14 +21,16 @@ logit.Log.Filepath = fmt.Sprintf("%s/%s%s%s", build.Default.GOPATH, "myapp_logs/
 ```
 /home/server/go/myapp_logs/logfile_2019_06_11.txt would be created in your GOPATH folder, inside a folder called myapp_logs
 
-### In case of non existent directory, the app will try to create a dir or nested dir and will throw an error message in case of fail
+#### Automatic folder creation
+The app will try to create any folder and subfolders in case of non existance and will throw an error in case of permition error or other exception
 
-### To write in the log file you must call the function *WriteLog(category string, msg string, errorTrace string)*:
+
+#### To write in the log file you must call the function *WriteLog(category string, msg string, errorTrace string)*:
 ```Go
 logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
 ```
 
-### Default categories:
+#### Default categories:
 - error
 - emergency
 - alert
@@ -38,7 +40,7 @@ logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
 - info
 - debug
 
-### More categories can be added by calling the function *AppendCategories(map[string][]string)*:
+#### More categories can be added by calling the function *AppendCategories(map[string][]string)*:
 ```Go
     nc := map[string][]string{                                                                                      
         "custom1": {"Custom1:", "msg..."},                                                                          
@@ -47,7 +49,7 @@ logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
     logit.Log.AppendCategories(nc)         
 ```
 
-### Basic use 
+#### Basic use 
 ```Go
 package main
 
@@ -77,8 +79,8 @@ func main() {
 2019/06/12 18:21:17 Debug: This is a debug message on /server/go/src/app/main.go:15 PID: 37777    
 
 
-### Better use
-### Calling from a setup container and using [godotenv] to retrieve .env file values for path and extension:
+#### Better use
+#### Calling from a setup container and using [godotenv] to retrieve .env file values for path and extension:
 By calling if from a container you can have fixed customized settings as well as use other dependencies such as [godotenv] for a main configuration file. 
 #### .env
 ```
