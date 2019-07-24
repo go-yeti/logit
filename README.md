@@ -9,7 +9,7 @@ import "github.com/thegorgeouslang/logit.git"
 $ go get http://github.com/thegorgeouslang/logit.git
 ```
 
-#### Where are the files created?
+#### Log files creation?
 
  Log files are created by default in the log/ folder in the root of the project. logs/ folder using the current date of the server as its name and .log extension:
 
