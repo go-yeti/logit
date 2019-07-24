@@ -11,7 +11,7 @@ $ go get http://github.com/thegorgeouslang/logit.git
 
 #### Log files creation?
 
- Log files are created by default in the log/ folder in the root of the project. logs/ folder using the current date of the server as its name and .log extension:
+ Log files are created by default in the log/ folder in the root dir. of the project. Filenames are the join of the current date of the server with .log extension:
 
 *logs/2019_06_11.log* 
 
