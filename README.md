@@ -1,11 +1,21 @@
 # LogIt
 
-Save error and other messages to the a .log  file
+Save log messages to a log file.
 
-#### By default files are created in the root folder of your project, within the logs/ folder using the current date of the server as its name and .log extension:
+```Go
+import "github.com/thegorgeouslang/logit.git"
+```
+```sh
+$ go get http://github.com/thegorgeouslang/logit.git
+```
+
+#### Where are the files created?
+
+ Log files are created by default in the log/ folder in the root of the project. logs/ folder using the current date of the server as its name and .log extension:
+
 *logs/2019_06_11.log* 
 
-#### That can be easily changed by:
+#### Change the path and name of the log file:
 ```Go
 logit.Log.Filepath = "anotherFolder/mylogfile.txt"
 ```
@@ -22,13 +32,22 @@ logit.Log.Filepath = fmt.Sprintf("%s/%s%s%s", build.Default.GOPATH, "myapp_logs/
 /home/server/go/myapp_logs/logfile_2019_06_11.txt would be created in your GOPATH folder, inside a folder called myapp_logs
 
 #### Automatic folder creation
-The app will try to create any folder and subfolders in case of non existance and will throw an error in case of permition error or other exception
+- The app will try to create any folders and subfolders    
+- An error will be returned in case of failure
 
-
-#### To write in the log file you must call the function *WriteLog(category string, msg string, errorTrace string)*:
-```Go
-logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
+```go
+// createDir function - function attempts to create the log file dir in case it doesn't exists
+err = os.MkdirAll(filepath.Dir(this.Filepath), 0755)
 ```
+
+
+#### Write to the log file :
+Function WriteLog(category string, msg string, errorTrace string)*  
+```Go
+logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())    
+```
+
+## Categories
 
 #### Default categories:
 - error
@@ -40,7 +59,8 @@ logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
 - info
 - debug
 
-#### More categories can be added by calling the function *AppendCategories(map[string][]string)*:
+#### Adding more loggin categories
+Function *AppendCategories(map[string][]string)*:
 ```Go
     nc := map[string][]string{                                                                                      
         "custom1": {"Custom1:", "msg..."},                                                                          
@@ -49,7 +69,7 @@ logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
     logit.Log.AppendCategories(nc)         
 ```
 
-#### Basic use 
+#### Use #1- (saving in the default dir and same filename)
 ```Go
 package main
 
@@ -76,11 +96,53 @@ func main() {
 2019/06/12 18:21:17 Warning: This is a warning message on /server/go/src/app/main.go:12 PID: 37777   
 2019/06/12 18:21:17 Notice: This is a notice message on /server/go/src/app/main.go:13 PID: 37777    
 2019/06/12 18:21:17 Info: This is a info message on /server/go/src/app/main.go:14 PID: 37777    
-2019/06/12 18:21:17 Debug: This is a debug message on /server/go/src/app/main.go:15 PID: 37777    
+2019/06/12 18:21:17 Debug: This is a debug message on /server/go/src/app/main.go:15 PID: 37777
+
+#### Use #2- (saving a custom dir and filename)
+```Go
+package main
+
+import (
+    "github.com/thegorgeouslang/logit"
+)
+
+func main() {
+    // saving to a custom path
+    logit.Log.Filepath = "anotherFolder/filename.log"
+    
+    // or
+    
+    // saving to the your GOPATH
+    logit.Log.Filepath = fmt.Sprintf("%s/%s%s%s", 
+             build.Default.GOPATH, // GOPATH string
+             "myapp_logs/logfile_",  // folder and file prefix
+             time.Now().Format("2006_01_02"),  // today's date
+            ".log") // extension
+    
+    
+    logit.Log.WriteLog("error", "This is an error message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("emergency", "This is an emergency message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("alert", "This is an alert message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("critical", "This is a critical message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("warning", "This is a warning message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("notice", "This is a notice message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("info", "This is an info message", logit.Log.GetTraceMsg())
+    logit.Log.WriteLog("debug", "This is a debug message", logit.Log.GetTraceMsg())
+}
+```
+
+2019/06/12 18:21:17 Error: This is an error message on /server/go/src/app/main.go:8 PID: 37777   
+2019/06/12 18:21:17 Emergency: This is an emergency message on /server/go/src/app/main.go:9 PID: 37777   
+2019/06/12 18:21:17 Alert: This is an alert message on /yserver/go/src/app/main.go:10 PID: 37777   
+2019/06/12 18:21:17 Critical: This is a critical message on /server/go/src/app/main.go:11 PID: 37777    
+2019/06/12 18:21:17 Warning: This is a warning message on /server/go/src/app/main.go:12 PID: 37777   
+2019/06/12 18:21:17 Notice: This is a notice message on /server/go/src/app/main.go:13 PID: 37777    
+2019/06/12 18:21:17 Info: This is a info message on /server/go/src/app/main.go:14 PID: 37777    
+2019/06/12 18:21:17 Debug: This is a debug message on /server/go/src/app/main.go:15 PID: 37777
 
 
 #### Better use
-#### Calling from a setup container and using [godotenv] to retrieve .env file values for path and extension:
+#### Calling from a container and using [godotenv] to retrieve .env file values for path and extension:
 By calling if from a container you can have fixed customized settings as well as use other dependencies such as [godotenv] for a main configuration file. 
 #### .env
 ```
