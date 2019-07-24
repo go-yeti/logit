@@ -1,6 +1,6 @@
 # LogIt
 
-A Logger interface that prints to the console and append messages to a log file. 
+Save error and other messages to the a .log  file
 
 #### By default files are created in the root folder of your project, within the logs/ folder using the current date of the server as its name and .log extension:
 *logs/2019_06_11.log* 
